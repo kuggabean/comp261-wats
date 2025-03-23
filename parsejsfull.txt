@@ -1,0 +1,122 @@
+interface E{}
+record Fun(List<X> b, E e) implements E{
+    List<X> vars(){
+        return b();
+    }
+    E body(){
+        return e();    
+    }
+}
+record Call(E e, List<E> a) implements E{
+    E receiver(){
+        return e();    
+    }
+    List<E> parameters(){
+        return a();
+    }
+}
+record X(String input) implements E{}
+
+record Parser(List<Token> ts){
+    boolean match(String kind){
+        return !ts.isEmpty() && kind.equals(ts.getFirst().kind().name());    
+    }
+    Token consume(String kind){
+    if(match(kind)){
+        return ts.removeFirst();    
+    }
+    throw new RuntimeException("Expected " + kind);
+}
+    boolean consumeIf(String kind){
+        if(match(kind)){
+            ts.removeFirst();
+            return true;
+        }
+        return false;
+    }
+    E parseAll(){
+    E e = parseE();
+    if(!ts.isEmpty()){
+        throw new RuntimeException();
+    }
+    return e;
+    }
+
+    
+    E parseE(){
+    E head;
+    if (match("XT")) {
+        head = parseX();
+    } else if (match("OrT")) {
+        ts.removeFirst(); 
+        if (match("OrT")) {
+            head = parseFun();
+        } else {
+            throw new RuntimeException("Expected '(' after '('");
+        }
+    } else {
+        throw new RuntimeException("Expected identifier or '('");
+    }
+    
+    
+    while (match("OrT")) {
+        head = parseCall(head);
+    }
+    
+    return head;
+}
+    
+    X parseX(){
+    if(match("XT")){
+        return new X(consume("XT").content());
+    }
+    throw new RuntimeException("Expected identifier.");
+    }
+    
+    E parseXOrCall() {
+        X id = parseX();
+        if (match("OrT")) {
+            return parseCall(id);
+        }
+        return id;
+    }
+    
+    Call parseCall(E receiver) {
+        consume("OrT");
+        List<E> param = new ArrayList<>();
+        if (!match("CrT")) {
+            do {
+                param.add(parseE());
+            } while (consumeIf("CommaT"));
+        }
+        consume("CrT");
+        return new Call(receiver, param);
+    }
+    
+    Fun parseFun() {
+    consume("OrT");
+    
+    List<X> vars = new ArrayList<>();
+    if (!match("CrT")) {
+        do {
+            vars.add(parseX());
+        } while (consumeIf("CommaT"));
+    }
+    consume("CrT"); 
+    consume("ArrowT"); 
+    E body = parseE();  
+    consume("CrT");  
+    
+    return new Fun(vars, body);
+}
+    
+    
+    static Tokenizer initTokenizer(){
+        return new Tokenizer()
+        .add("XT", "[a-zA-Z]+", false)
+        .add("OrT", "\\x28", false)
+        .add("CrT", "\\x29", false)
+        .add("ArrowT", "=>", false)
+        .add("CommaT", ",", false);
+    }
+}
