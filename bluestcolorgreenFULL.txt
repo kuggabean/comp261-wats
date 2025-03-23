@@ -1,0 +1,31 @@
+class BluestWithGreen{
+    int minGreen;
+    
+   BluestWithGreen(int minGreen){
+        this.minGreen = minGreen;
+        
+    }
+    
+    public List<Color> of(List<Color> input){
+       List<Color> result = new java.util.ArrayList<>();
+       int maxBlue = 0;
+       
+       for(Color color: input){
+           if(color.blue() > maxBlue && color.green() >= minGreen){
+               maxBlue = color.blue();
+           }
+       }
+       
+       for(Color col: input){
+           if(col.blue() == maxBlue && col.green() >= minGreen){
+               result.add(col);
+           }
+       }
+       return result;
+        
+     
+       
+       
+    }
+    
+}

@@ -1,0 +1,4 @@
+new Tokenizer()
+      .add("Comment", "/\\*[\\s\\S]*?\\*/", true)
+      .add("SpaceT", "\\s+", true)
+      .add("IdT", "[A-Za-z]+", false)
