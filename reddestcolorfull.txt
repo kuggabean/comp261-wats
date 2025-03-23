@@ -1,0 +1,20 @@
+class Reddest{
+    
+    public Color of(List<Color> input){
+    if (input.isEmpty()){
+        throw new IllegalArgumentException();
+    }
+    Color best = input.get(0);
+    
+    for(Color color: input){
+        if(color.red() >= best.red()){
+            best = color;
+            
+        }
+        
+        
+    }
+    return best;
+    }
+}
+        

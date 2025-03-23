@@ -1,0 +1,6 @@
+int size = ps1.size() + ps2.size();
+Set<Point> result = new HashSet<>(size);
+result.addAll(ps1);
+result.addAll(ps2);
+
+return result;
